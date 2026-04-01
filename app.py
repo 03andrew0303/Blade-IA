@@ -1,8 +1,9 @@
 import streamlit as st
+import tempfile
+import os
 from core.metrics import calcular_metricas
 from core.rules_engine import analizar_flags
 from core.report_generator import generar_informe
-import os
 
 st.set_page_config(
     page_title="Analizador de Rotores UAV",
@@ -34,19 +35,60 @@ nombre_helice = st.text_input("Descripción de la hélice (ej. APC 17x12)", valu
 
 # --- ANÁLISIS ---
 if st.button("🔍 Analizar", use_container_width=True):
+    try:
+        resultado = calcular_metricas(
+            peso_total_kg=peso_kg,
+            num_rotores=num_rotores,
+            diametro_in=diametro_in,
+            rpm=rpm,
+            altitud_m=altitud_m,
+            temperatura_C=temperatura_C
+        )
 
-    resultado = calcular_metricas(
-        peso_total_kg=peso_kg,
-        num_rotores=num_rotores,
-        diametro_in=diametro_in,
-        rpm=rpm,
-        altitud_m=altitud_m,
-        temperatura_C=temperatura_C
-    )
+        diagnostico = analizar_flags(resultado, prioridad=prioridad)
 
-    diagnostico = analizar_flags(resultado, prioridad=prioridad)
+        config = {
+            "Tipo de multirrotor": tipo,
+            "Peso total (MTOW)": f"{peso_kg} kg",
+            "Número de rotores": num_rotores,
+            "Hélice": nombre_helice,
+            "RPM hover": rpm,
+            "Altitud operación": f"{altitud_m} m",
+            "Temperatura": f"{temperatura_C}°C",
+            "Prioridad": prioridad,
+        }
 
-    # --- RESULTADOS ---
+        # Generate report to a unique temp file to avoid concurrent user collisions
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp:
+            tmp_path = tmp.name
+
+        generar_informe(
+            metricas=resultado,
+            diagnostico=diagnostico,
+            config=config,
+            output_path=tmp_path
+        )
+
+        with open(tmp_path, "rb") as f:
+            report_bytes = f.read()
+
+        os.unlink(tmp_path)
+
+        # Persist results in session state so the download button survives reruns
+        st.session_state["resultado"] = resultado
+        st.session_state["diagnostico"] = diagnostico
+        st.session_state["report_bytes"] = report_bytes
+
+    except Exception as e:
+        st.error(f"Error durante el análisis: {e}")
+        st.stop()
+
+# --- RESULTADOS (rendered from session state so they survive download button click) ---
+if "resultado" in st.session_state:
+    resultado = st.session_state["resultado"]
+    diagnostico = st.session_state["diagnostico"]
+    report_bytes = st.session_state["report_bytes"]
+
     st.divider()
     st.subheader("📊 Métricas calculadas")
 
@@ -67,11 +109,11 @@ if st.button("🔍 Analizar", use_container_width=True):
 
     sev = diagnostico["severidad_global"]
     if sev == "critical":
-        st.error(f"Severidad global: CRÍTICO")
+        st.error("Severidad global: CRÍTICO")
     elif sev == "warning":
-        st.warning(f"Severidad global: ADVERTENCIA")
+        st.warning("Severidad global: ADVERTENCIA")
     else:
-        st.success(f"Severidad global: OK")
+        st.success("Severidad global: OK")
 
     for flag in diagnostico["flags"]:
         if flag["severidad"] == "critical":
@@ -89,32 +131,12 @@ if st.button("🔍 Analizar", use_container_width=True):
     for i, rec in enumerate(diagnostico["recomendaciones"], 1):
         st.markdown(f"**{i}.** {rec}")
 
-    # --- GENERAR INFORME ---
+    # --- DESCARGAR INFORME ---
     st.divider()
-    config = {
-        "Tipo de multirrotor": tipo,
-        "Peso total (MTOW)": f"{peso_kg} kg",
-        "Número de rotores": num_rotores,
-        "Hélice": nombre_helice,
-        "RPM hover": rpm,
-        "Altitud operación": f"{altitud_m} m",
-        "Temperatura": f"{temperatura_C}°C",
-        "Prioridad": prioridad,
-    }
-
-    output_path = "informe_rotor.docx"
-    generar_informe(
-        metricas=resultado,
-        diagnostico=diagnostico,
-        config=config,
-        output_path=output_path
+    st.download_button(
+        label="📄 Descargar informe Word",
+        data=report_bytes,
+        file_name="informe_rotor.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        use_container_width=True
     )
-
-    with open(output_path, "rb") as f:
-        st.download_button(
-            label="📄 Descargar informe Word",
-            data=f,
-            file_name="informe_rotor.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            use_container_width=True
-        )

@@ -118,8 +118,8 @@ def generar_informe(
     doc.add_paragraph("")
     doc.add_paragraph("")
     doc.add_paragraph("")
-    
-# --- PIE ---
+
+    # --- PIE ---
     doc.add_paragraph("─" * 60)
     pie = doc.add_paragraph("Documento generado automáticamente · Motor v0.1")
     pie.runs[0].font.size = Pt(9)

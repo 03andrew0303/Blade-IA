@@ -11,7 +11,7 @@ config = {
     "RPM hover": 3400,
     "Altitud operación": "0 m",
     "Temperatura": "15°C",
-    "Prioridad": "Ruido",
+    "Prioridad": "ruido",
 }
 
 # Motor físico

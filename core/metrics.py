@@ -19,7 +19,13 @@ def calcular_metricas(
     altitud_m: float = 0.0,
     temperatura_C: float = 15.0
 ) -> dict:
-    
+    if num_rotores <= 0:
+        raise ValueError(f"num_rotores debe ser > 0, recibido: {num_rotores}")
+    if rpm <= 0:
+        raise ValueError(f"rpm debe ser > 0, recibido: {rpm}")
+    if diametro_in <= 0:
+        raise ValueError(f"diametro_in debe ser > 0, recibido: {diametro_in}")
+
     # Geometría
     diametro_m = diametro_in * 0.0254
     radio_m = diametro_m / 2
