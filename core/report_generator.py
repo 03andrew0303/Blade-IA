@@ -1,14 +1,19 @@
+import io
 from docx import Document
-from docx.shared import Pt, RGBColor, Inches
+from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from datetime import datetime
+
 
 def generar_informe(
     metricas: dict,
     diagnostico: dict,
     config: dict,
-    output_path: str = "informe_rotor.docx"
-):
+) -> bytes:
+    """
+    Genera el informe técnico en memoria y devuelve los bytes del .docx.
+    No escribe nada en disco.
+    """
     doc = Document()
 
     # --- ESTILOS GLOBALES ---
@@ -40,8 +45,8 @@ def generar_informe(
 
     for key, value in config.items():
         row = tabla_config.add_row().cells
-        row[0].text = str(key)
-        row[1].text = str(value)
+        row[0].text = str(key)[:100]
+        row[1].text = str(value)[:200]
 
     doc.add_paragraph("")
 
@@ -56,13 +61,13 @@ def generar_informe(
     hdr2[2].text = "Unidad"
 
     metricas_labels = {
-        "tip_speed_m_s":         ("Tip Speed",              "m/s"),
-        "mach_tip":              ("Mach Tip",               "—"),
-        "disk_loading_N_m2":     ("Disk Loading",           "N/m²"),
-        "CT_calculado":          ("Coef. Empuje CT",        "—"),
-        "thrust_por_rotor_N":    ("Thrust por rotor",       "N"),
-        "potencia_ideal_hover_W":("Potencia ideal hover",   "W"),
-        "rho_kg_m3":             ("Densidad del aire",      "kg/m³"),
+        "tip_speed_m_s":          ("Tip Speed",             "m/s"),
+        "mach_tip":               ("Mach Tip",              "—"),
+        "disk_loading_N_m2":      ("Disk Loading",          "N/m²"),
+        "CT_calculado":           ("Coef. Empuje CT",       "—"),
+        "thrust_por_rotor_N":     ("Thrust por rotor",      "N"),
+        "potencia_ideal_hover_W": ("Potencia ideal hover",  "W"),
+        "rho_kg_m3":              ("Densidad del aire",     "kg/m³"),
     }
 
     for key, (label, unidad) in metricas_labels.items():
@@ -126,5 +131,8 @@ def generar_informe(
     pie.runs[0].font.color.rgb = RGBColor(0x99, 0x99, 0x99)
     pie.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    doc.save(output_path)
-    print(f"\nInforme guardado en: {output_path}")
+    # Guardar en buffer en memoria — no se escribe nada en disco
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer.read()

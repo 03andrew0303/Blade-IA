@@ -1,8 +1,16 @@
+_PRIORIDADES_VALIDAS = {"balanced", "ruido", "eficiencia"}
+
+
 def analizar_flags(metricas: dict, prioridad: str = "balanced") -> dict:
     """
     Analiza las métricas calculadas y devuelve flags de diagnóstico.
     prioridad: "ruido" | "eficiencia" | "balanced"
     """
+    if prioridad not in _PRIORIDADES_VALIDAS:
+        raise ValueError(
+            f"prioridad debe ser una de {_PRIORIDADES_VALIDAS}, recibido: {prioridad!r}"
+        )
+
     flags = []
     recomendaciones = []
 

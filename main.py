@@ -28,9 +28,11 @@ resultado = calcular_metricas(
 diagnostico = analizar_flags(resultado, prioridad="ruido")
 
 # Generar informe Word
-generar_informe(
+report_bytes = generar_informe(
     metricas=resultado,
     diagnostico=diagnostico,
     config=config,
-    output_path="informe_rotor.docx"
 )
+with open("informe_rotor.docx", "wb") as f:
+    f.write(report_bytes)
+print("\nInforme guardado en: informe_rotor.docx")
