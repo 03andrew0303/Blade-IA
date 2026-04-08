@@ -1,4 +1,5 @@
 import re
+import base64
 import logging
 import streamlit as st
 from core.metrics import calcular_metricas
@@ -242,32 +243,37 @@ hr { border: none; border-top: 1px solid #E2E8F0; margin: 1.75rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── DRONE SVG ICON ─────────────────────────────────────────────────────────────
-_DRONE_SVG = """
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="58" height="58">
-  <circle cx="40" cy="40" r="9" fill="rgba(255,255,255,0.95)"/>
-  <circle cx="40" cy="40" r="4.5" fill="#60A5FA"/>
-  <line x1="40" y1="40" x2="16" y2="16" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>
-  <line x1="40" y1="40" x2="64" y2="16" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>
-  <line x1="40" y1="40" x2="16" y2="64" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>
-  <line x1="40" y1="40" x2="64" y2="64" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>
-  <ellipse cx="16" cy="16" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(-45 16 16)"/>
-  <ellipse cx="64" cy="16" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(45 64 16)"/>
-  <ellipse cx="16" cy="64" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(45 16 64)"/>
-  <ellipse cx="64" cy="64" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(-45 64 64)"/>
-</svg>
-"""
+# ── DRONE SVG ICON (base64 para evitar que el parser de markdown lo escape) ────
+_DRONE_SVG_RAW = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">'
+    '<circle cx="40" cy="40" r="9" fill="rgba(255,255,255,0.95)"/>'
+    '<circle cx="40" cy="40" r="4.5" fill="#60A5FA"/>'
+    '<line x1="40" y1="40" x2="16" y2="16" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>'
+    '<line x1="40" y1="40" x2="64" y2="16" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>'
+    '<line x1="40" y1="40" x2="16" y2="64" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>'
+    '<line x1="40" y1="40" x2="64" y2="64" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round"/>'
+    '<ellipse cx="16" cy="16" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(-45 16 16)"/>'
+    '<ellipse cx="64" cy="16" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(45 64 16)"/>'
+    '<ellipse cx="16" cy="64" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(45 16 64)"/>'
+    '<ellipse cx="64" cy="64" rx="13" ry="4" fill="rgba(255,255,255,0.85)" transform="rotate(-45 64 64)"/>'
+    '</svg>'
+)
+_DRONE_IMG = (
+    '<img src="data:image/svg+xml;base64,'
+    + base64.b64encode(_DRONE_SVG_RAW.encode()).decode()
+    + '" width="58" height="58" alt="drone icon"/>'
+)
 
 # ── HEADER ─────────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="adf-header">
-    {_DRONE_SVG}
-    <div class="adf-header-text">
-        <h1>ADF Blades — Analizador de Rotores UAV</h1>
-        <p>Introduce los parámetros del sistema para generar el análisis técnico de rendimiento</p>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    f'<div class="adf-header">'
+    f'{_DRONE_IMG}'
+    f'<div class="adf-header-text">'
+    f'<h1>ADF Blades &mdash; Analizador de Rotores UAV</h1>'
+    f'<p>Introduce los par&aacute;metros del sistema para generar el an&aacute;lisis t&eacute;cnico de rendimiento</p>'
+    f'</div></div>',
+    unsafe_allow_html=True,
+)
 
 # ── FORM ───────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns(2, gap="large")
