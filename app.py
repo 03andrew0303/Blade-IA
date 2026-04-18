@@ -96,28 +96,69 @@ section[data-testid="stSidebar"] > div:first-child { padding: 0 !important; }
 /* ── Inputs ── */
 label { font-size:0.78rem !important; font-weight:500 !important; color:#4A5568 !important; }
 
-/* ── Page header banner ── */
+/* ── Page header banner (full-width dark) ── */
 .pg-header {
-    background: linear-gradient(135deg, #0C1F3D 0%, #1A3460 50%, #2357C8 100%);
-    border-radius: 14px;
-    padding: 1.75rem 2.2rem;
-    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #111827 0%, #1c2840 55%, #0f1e35 100%);
+    border-bottom: 2px solid rgba(96,165,250,0.22);
+    border-radius: 0;
+    /* Escapa el padding del block-container para ancho completo */
+    margin-left: -2rem;
+    margin-right: -2rem;
+    margin-top: -1.75rem;
+    margin-bottom: 1.75rem;
+    padding: 2rem 2.5rem;
+    min-height: 130px;
     display: flex;
     align-items: center;
-    gap: 1.4rem;
-    box-shadow: 0 6px 24px rgba(12,31,61,0.22);
+    gap: 1.5rem;
+    flex-wrap: wrap;
 }
+.pg-header-text { flex: 1; min-width: 200px; }
 .pg-header-text h1 {
-    color: #fff;
-    font-size: 1.45rem;
-    font-weight: 700;
+    color: #f8fafc;
+    font-size: 2rem;
+    font-weight: 800;
     margin: 0;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
 }
+.pg-accent { color: #60a5fa; }
 .pg-header-text p {
-    color: rgba(255,255,255,0.55);
-    font-size: 0.8rem;
-    margin: 0.25rem 0 0;
+    color: #94a3b8;
+    font-size: 0.92rem;
+    margin: 0.35rem 0 0.75rem;
+    font-weight: 400;
+}
+.pg-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.pg-pill {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.13);
+    color: #cbd5e1;
+    padding: 0.18rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.67rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.pg-badge {
+    background: rgba(37,99,235,0.12);
+    border: 1px solid rgba(96,165,250,0.28);
+    border-radius: 10px;
+    padding: 0.55rem 1.1rem;
+    color: #93c5fd;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+@media (max-width: 780px) {
+    .pg-header { padding: 1.4rem 1.25rem; min-height: auto; }
+    .pg-header-text h1 { font-size: 1.5rem; }
+    .pg-header-text p { font-size: 0.8rem; }
+    .pg-badge { font-size: 0.64rem; }
 }
 
 /* ── Section label ── */
@@ -264,17 +305,30 @@ with st.sidebar:
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     analizar = st.button("Analizar sistema", use_container_width=True)
-    st.markdown('<div class="sb-foot">ADF Blades &nbsp;·&nbsp; Motor v0.1</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-foot">ADF Blades &nbsp;·&nbsp; v1.0</div>', unsafe_allow_html=True)
 
 
 # ── MAIN ───────────────────────────────────────────────────────────────────────
 st.markdown(
     f'<div class="pg-header">'
-    f'<img src="{_ICON_URI}" width="48" height="48" alt=""/>'
+    f'<img src="{_ICON_URI}" width="56" height="56" alt=""/>'
     f'<div class="pg-header-text">'
-    f'<h1>Analizador de Rotores UAV</h1>'
-    f'<p>Motor de an&aacute;lisis aerodin&aacute;mico &mdash; ADF_Blades v0.1</p>'
-    f'</div></div>',
+    f'<h1>ADF <span class="pg-accent">Blades</span></h1>'
+    f'<p>Analizador de m&aacute;rgenes operativos para rotores UAV</p>'
+    f'<div class="pg-pills">'
+    f'<span class="pg-pill">Condiciones reales</span>'
+    f'<span class="pg-pill">ISA atmosf&eacute;rico</span>'
+    f'<span class="pg-pill">Diagn&oacute;stico de severidad</span>'
+    f'</div>'
+    f'</div>'
+    f'<div class="pg-badge">'
+    f'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    f'<path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>'
+    f'<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'
+    f'</svg>'
+    f'Operadores profesionales<br>Inspecci&oacute;n industrial'
+    f'</div>'
+    f'</div>',
     unsafe_allow_html=True,
 )
 
