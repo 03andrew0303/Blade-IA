@@ -161,6 +161,29 @@ label { font-size:0.78rem !important; font-weight:500 !important; color:#4A5568 
     .pg-badge { font-size: 0.64rem; }
 }
 
+/* ── Mobile: stack Streamlit columns and metric grids vertically ── */
+@media (max-width: 640px) {
+    /* Streamlit st.columns() → force single column */
+    .stHorizontalBlock {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    .stHorizontalBlock > [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        flex: none !important;
+    }
+    /* Metric grids → single column */
+    .m-grid4 { grid-template-columns: 1fr 1fr !important; }
+    .m-grid3 { grid-template-columns: 1fr !important; }
+    /* Sidebar inputs full width */
+    .main .block-container { padding: 1rem !important; }
+    .pg-header {
+        margin-left: -1rem !important;
+        margin-right: -1rem !important;
+    }
+}
+
 /* ── Section label ── */
 .sec-label {
     font-size: 0.65rem;

@@ -119,7 +119,7 @@ def generar_informe(
 
     # --- NOTAS DEL INGENIERO ---
     doc.add_heading("5. Notas del ingeniero", level=2)
-    doc.add_paragraph("[Espacio reservado para anotaciones manuales]")
+    doc.add_paragraph("Observaciones del técnico responsable:")
     doc.add_paragraph("")
     doc.add_paragraph("")
     doc.add_paragraph("")
